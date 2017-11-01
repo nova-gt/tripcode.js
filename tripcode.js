@@ -1,4 +1,5 @@
 /*
+2017/11/02 FreeBSD 0x80バグ再現を削除
 2017/07/31 変換処理を整理
 2017/07/29 インデント調整(タブ文字→半角スペース)
 2017/07/28 クロージャ周りを整理
@@ -57,7 +58,7 @@ sha1.js : http://user1.matsumoto.ne.jp/~goma/js/hash.html
     };
 
     /** 10桁トリップ変換 */
-    const crypt = (key, salt) => des.crypt(key.split("\x80")[0], salt).substr(-10);
+    const crypt = (key, salt) => des.crypt(key.split("\x00")[0], salt).substr(-10);
 
     /**
      * 英数字を半角カナに変換(15桁トリップ用)
