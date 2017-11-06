@@ -1,4 +1,5 @@
 /*
+2017/11/06 prototypeメソッドの定義を修正
 2017/11/06 SHA-1ダイジェストの記号置換を修正
 2017/11/02 FreeBSD 0x80バグ再現を削除
 2017/07/31 変換処理を整理
@@ -163,33 +164,44 @@ sha1.js : http://user1.matsumoto.ne.jp/~goma/js/hash.html
     };
 
     /**
-     * Unicode文字を10進数の数値文字参照に変換
+     * stringにメソッドを追加
      */
-    String.prototype.shiftJIS = function () {
-        return [...this].map(toShiftJIS).join("");
-    };
+    Object.defineProperties(String.prototype, {
+        /**
+         * Unicode文字を10進数の数値文字参照に変換
+         */
+        "shiftJIS": {
+            enumerable: false,
+            value: function () {
+                return [...this].map(toShiftJIS).join("");
+            },
+        },
 
-    /**
-     * 文字列をトリップに変換
-     */
-    String.prototype.tripcode = function (appendRawKey) {
-        // 生キー生成オプションをboolean型に変換
-        appendRawKey = !!appendRawKey;
-
-        // 改行コードがあれば除去
-        let key = this.replace(/\r|\n/g, "")
-
-        // Unicode文字を10進数の数値文字参照に変換
-        key = key.shiftJIS();
-
-        // Shift_JISバイナリデータに変換
-        key = EscapeSJIS(key).replace(shiftJISPercentEncodingPattern, toBinary);
-
-        // 変換
-        return key.length < 12
-            ? tripcodeWithKey(key, appendRawKey)
-            : tripcodeWithRawKey(key, appendRawKey)
-            || tripcode15WithKey(key)
-            || tripcode12WithKey(key);
-    };
+        /**
+         * 文字列をトリップに変換
+         */
+        "tripcode": {
+            enumerable: false,
+            value: function (appendRawKey) {
+                // 生キー生成オプションをboolean型に変換
+                appendRawKey = !!appendRawKey;
+        
+                // 改行コードがあれば除去
+                let key = this.replace(/\r|\n/g, "")
+        
+                // Unicode文字を10進数の数値文字参照に変換
+                key = key.shiftJIS();
+        
+                // Shift_JISバイナリデータに変換
+                key = EscapeSJIS(key).replace(shiftJISPercentEncodingPattern, toBinary);
+        
+                // 変換
+                return key.length < 12
+                    ? tripcodeWithKey(key, appendRawKey)
+                    : tripcodeWithRawKey(key, appendRawKey)
+                    || tripcode15WithKey(key)
+                    || tripcode12WithKey(key);
+            },
+        },
+    });
 })();
