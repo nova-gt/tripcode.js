@@ -1,4 +1,5 @@
 /*
+2017/11/06 SHA-1ダイジェストの記号置換を修正
 2017/11/02 FreeBSD 0x80バグ再現を削除
 2017/07/31 変換処理を整理
 2017/07/29 インデント調整(タブ文字→半角スペース)
@@ -37,6 +38,12 @@ sha1.js : http://user1.matsumoto.ne.jp/~goma/js/hash.html
 
     /** ダイジェストを生キーに変換 */
     const rawKey = (digest, salt) => "##" + digest.toUpperCase() + salt.replace(tailPeriodsPattern, "");
+
+    /** プラス全てにマッチするパターン */
+    const allPlusesPattern = /\+/g;
+
+    /** スラッシュ全てにマッチするパターン */
+    const allSlashesPattern = /\//g;
 
     /** Shift_JIS半角カナのバイトパターン */
     const halfWidthKanaPattern = /^[$][\xA1-\xDF]/;
@@ -137,8 +144,8 @@ sha1.js : http://user1.matsumoto.ne.jp/~goma/js/hash.html
 
         const tripcode = btoa(sha1.bin(key))
             .substr(3, 15)
-            .replace("+", ".")
-            .replace("/", "!");
+            .replace(allPlusesPattern, ".")
+            .replace(allSlashesPattern, "!");
 
         // キー2文字目が半角カナの場合はトリップを半角カナに置換
         return key.match(halfWidthKanaPattern)
@@ -152,7 +159,7 @@ sha1.js : http://user1.matsumoto.ne.jp/~goma/js/hash.html
     const tripcode12WithKey = (key) => {
         return btoa(sha1.bin(key))
             .substr(0, 12)
-            .replace("+", ".");
+            .replace(allPlusesPattern, ".");
     };
 
     /**
